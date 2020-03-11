@@ -1,0 +1,40 @@
+version: "3"
+services:
+    mysql:
+        image: mysql:5.7
+        container_name: mysql57
+        command: --default-authentication-plugin=mysql_native_password
+        volumes:
+            - "./mysql-data/db:/var/lib/mysql"
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: nick
+            MYSQL_DATABASE: mini
+            MYSQL_USER: db_user
+            MYSQL_PASSWORD: db_pass
+        deploy:
+            resources:
+                limits:
+                    memory: 700m
+                reservations:
+                    memory: 500m
+        ports:
+            - 3434:3306
+    website:
+        container_name: php72
+        build:
+            context: ./
+        volumes:
+            - ./app/:/var/www/html/
+        ports:
+            - 6969:80
+        deploy:
+            resources:
+                limits:
+                    memory: 500m
+                reservations:
+                    memory: 100m
+        links:
+            - mysql
+        depends_on:
+            - mysql

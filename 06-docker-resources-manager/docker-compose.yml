@@ -1,0 +1,39 @@
+version: "3"
+services:
+    db:
+        image: mysql:5.7
+        volumes:
+            - "./mysql/db:/var/lib/mysql"
+        restart: always
+        command: --default-authentication-plugin=mysql_native_password
+        environment:
+            MYSQL_ROOT_PASSWORD: nick
+        ports:
+            - 3636:3306
+        deploy:
+            resources:
+                limits:
+                    cpus: "0.50"
+                    memory: 200M
+                reservations:
+                    cpus: "0.25"
+                    memory: 100M
+    web:
+        image: php:rc-apache
+        # command: /bin/bash -c "apt-get update && apt-get install -y git && apt-get install -y zlib1g* && apt-get install -y libzip* && apt-get install -y libpng* && docker-php-ext-install pdo_mysql zip gd && a2enmod rewrite && php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && php composer-setup.php --install-dir=/usr/local/bin/ --filename=composer"
+        volumes:
+            - "./php/app:/var/html/www"
+        ports:
+            - 6969:80
+        deploy:
+            resources:
+                limits:
+                    cpus: "1"
+                    memory: 800M
+                reservations:
+                    cpus: "0.50"
+                    memory: 400M
+        links:
+            - db:dbhost
+        depends_on:
+            - db

@@ -1,0 +1,25 @@
+version: "3"
+services:
+    db:
+        image: mysql:5.7
+        container_name: mysql_v
+        volumes: 
+            - "./mysql/db:/var/lib/mysql"
+            - "./mysql/conf.d:/etc/mysql/conf.d"
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: nick
+        ports:
+            - 3939:3306
+    www:
+        container_name: php_v
+        build:
+            context: ./php/
+        volumes:
+            - ./php/app/:/var/www/html/
+        ports:
+            - 8282:80
+        links:
+            - db:dbhost
+        depends_on:
+            - db
